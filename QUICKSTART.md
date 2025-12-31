@@ -269,8 +269,8 @@ Import dashboard from `deploy/grafana/dashboard.json`
 
 ## Support
 
-- GitHub Issues: https://github.com/yourusername/finops-enforcer/issues
-- Documentation: https://github.com/yourusername/finops-enforcer/docs
+- GitHub Issues: https://github.com/rramesh17993/finops-enforcer/issues
+- Documentation: https://github.com/rramesh17993//finops-enforcer/docs
 
 ---
 
