@@ -1,4 +1,4 @@
-# 🚀 Getting Started - Automated FinOps Enforcer
+# Getting Started - Automated FinOps Enforcer
 
 Welcome! This guide will get you up and running in 10 minutes.
 
@@ -327,9 +327,9 @@ curl http://localhost:8081/healthz
 
 ## Support
 
-- 🐛 **Issues**: https://github.com/yourusername/finops-enforcer/issues
-- 💬 **Discussions**: https://github.com/yourusername/finops-enforcer/discussions
-- 📧 **Email**: your.email@example.com
+- 🐛 **Issues**: https://github.com/rramesh17993/finops-enforcer/issues
+- 💬 **Discussions**: https://github.com/rramesh17993/finops-enforcer/discussions
+- 📧 **Email**: rramesh17993@gmail.com
 
 ---
 
