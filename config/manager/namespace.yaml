@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: finops-system
+  labels:
+    name: finops-system
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: finops-enforcer-secrets
+  namespace: finops-system
+type: Opaque
+stringData:
+  # Set your Slack webhook URL here or create this secret manually
+  slack-webhook-url: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"

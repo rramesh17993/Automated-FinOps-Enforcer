@@ -1,0 +1,147 @@
+package controller
+package main
+
+import (
+	"flag"
+	"os"
+	"time"
+
+	finopsv1alpha1 "github.com/yourusername/finops-enforcer/api/v1alpha1"
+	"github.com/yourusername/finops-enforcer/pkg/controller"
+	"github.com/yourusername/finops-enforcer/pkg/cost"
+	"github.com/yourusername/finops-enforcer/pkg/enforcement"
+	"github.com/yourusername/finops-enforcer/pkg/notifications"
+	"github.com/yourusername/finops-enforcer/pkg/policy"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}	}		os.Exit(1)		setupLog.Error(err, "problem running manager")	if err := mgr.Start(ctx); err != nil {	)		"leader-election", enableLeaderElection,		"max-actions-per-run", maxActionsPerRun,		"opencost-endpoint", opencostEndpoint,		"version", "v0.1.0",	setupLog.Info("starting manager",	}		os.Exit(1)		setupLog.Error(err, "unable to set up ready check")	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {	}		os.Exit(1)		setupLog.Error(err, "unable to set up health check")	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {	// Add health and readiness checks	}		os.Exit(1)		setupLog.Error(err, "unable to create controller", "controller", "EnforcementPolicy")	}).SetupWithManager(mgr); err != nil {		MaxActionsPerRun: maxActionsPerRun,		Notifier:         notifier,		Enforcer:         enforcer,		PolicyEngine:     policyEngine,		CostClient:       costClient,		Scheme:           mgr.GetScheme(),		Client:           mgr.GetClient(),	if err = (&controller.EnforcementPolicyReconciler{	// Set up the reconciler	}		setupLog.Info("slack notifications disabled (no webhook URL provided)")	} else {		setupLog.Info("initialized slack notifier", "channel", slackChannel)		notifier = notifications.NewSlackNotifier(slackWebhookURL, slackChannel)	if slackWebhookURL != "" {	var notifier *notifications.SlackNotifier	// Initialize Slack notifier (if configured)	setupLog.Info("initialized enforcement executor")	enforcer := enforcement.NewExecutor(mgr.GetClient())	// Initialize enforcement executor	setupLog.Info("initialized policy engine")	policyEngine := policy.NewEngine()	// Initialize policy engine	}		setupLog.Info("opencost health check passed")	} else {		setupLog.Error(err, "opencost health check failed - continuing anyway")	if err := costClient.HealthCheck(ctx); err != nil {	ctx := ctrl.SetupSignalHandler()	// Health check OpenCost	setupLog.Info("initialized opencost client", "endpoint", opencostEndpoint)	costClient := cost.NewClient(opencostEndpoint, opencostTimeout)	// Initialize OpenCost client	}		os.Exit(1)		setupLog.Error(err, "unable to start manager")	if err != nil {	})		LeaderElectionID:       "finops-enforcer.finops.io",		LeaderElection:         enableLeaderElection,		HealthProbeBindAddress: probeAddr,		},			BindAddress: metricsAddr,		Metrics: metricsserver.Options{		Scheme: scheme,	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))	flag.Parse()	opts.BindFlags(flag.CommandLine)	}		Development: true,	opts := zap.Options{		"Maximum enforcement actions per reconciliation run")	flag.IntVar(&maxActionsPerRun, "max-actions-per-run", 10,		"Slack channel for notifications")	flag.StringVar(&slackChannel, "slack-channel", "#finops-alerts",		"Slack webhook URL for notifications")	flag.StringVar(&slackWebhookURL, "slack-webhook-url", os.Getenv("SLACK_WEBHOOK_URL"),		"Timeout for OpenCost API requests")	flag.DurationVar(&opencostTimeout, "opencost-timeout", 30*time.Second,		"OpenCost API endpoint")	flag.StringVar(&opencostEndpoint, "opencost-endpoint", "http://opencost.opencost:9003",			"Enabling this will ensure there is only one active controller manager.")		"Enable leader election for controller manager. "+	flag.BoolVar(&enableLeaderElection, "leader-elect", false,	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")	var maxActionsPerRun int	var slackChannel string	var slackWebhookURL string	var opencostTimeout time.Duration	var opencostEndpoint string	var probeAddr string	var enableLeaderElection bool	var metricsAddr stringfunc main() {}	utilruntime.Must(finopsv1alpha1.AddToScheme(scheme))	utilruntime.Must(clientgoscheme.AddToScheme(scheme))func init() {)	setupLog = ctrl.Log.WithName("setup")	scheme   = runtime.NewScheme()var ()	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"	"sigs.k8s.io/controller-runtime/pkg/log/zap"	"sigs.k8s.io/controller-runtime/pkg/healthz"	ctrl "sigs.k8s.io/controller-runtime"	clientgoscheme "k8s.io/client-go/kubernetes/scheme"	utilruntime "k8s.io/apimachinery/pkg/util/runtime"	"k8s.io/apimachinery/pkg/runtime"

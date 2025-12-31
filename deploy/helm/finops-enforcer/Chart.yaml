@@ -1,0 +1,17 @@
+apiVersion: v2
+name: finops-enforcer
+description: Active Cost Governance for Kubernetes - Automatically detect and pause idle workloads
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - finops
+  - cost-optimization
+  - kubernetes
+  - cost-governance
+home: https://github.com/yourusername/finops-enforcer
+sources:
+  - https://github.com/yourusername/finops-enforcer
+maintainers:
+  - name: Your Name
+    email: your.email@example.com

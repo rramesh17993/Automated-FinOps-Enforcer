@@ -1,0 +1,90 @@
+# Default values for finops-enforcer
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+image:
+  repository: finops-enforcer
+  pullPolicy: IfNotPresent
+  tag: "latest"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "finops-enforcer"
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8080"
+  prometheus.io/path: "/metrics"
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  fsGroup: 65532
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  capabilities:
+    drop:
+      - ALL
+service:
+  type: ClusterIP
+  port: 8080
+  metricsPort: 8080
+  healthPort: 8081
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: health
+  initialDelaySeconds: 15
+  periodSeconds: 20
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: health
+  initialDelaySeconds: 5
+  periodSeconds: 10
+# OpenCost integration
+opencost:
+  endpoint: "http://opencost.opencost:9003"
+  timeout: "30s"
+# Enforcement configuration
+enforcement:
+  maxActionsPerRun: 10
+  leaderElection: true
+# Slack notifications
+slack:
+  enabled: true
+  webhookURL: "" # Set via --set slack.webhookURL or in values file
+  channel: "#finops-alerts"
+# ServiceMonitor for Prometheus Operator
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  labels: {}
+# Network policy
+networkPolicy:
+  enabled: false
+# Node selector
+nodeSelector: {}
+# Tolerations
+tolerations: []
+# Affinity
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: finops-enforcer
+          topologyKey: kubernetes.io/hostname

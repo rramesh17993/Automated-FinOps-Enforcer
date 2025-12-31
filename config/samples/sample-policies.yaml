@@ -1,0 +1,106 @@
+# Sample Policy 1: Dev Environment Idle Cleanup
+# Pauses development environments that have been idle for 48 hours
+apiVersion: finops.io/v1alpha1
+kind: EnforcementPolicy
+metadata:
+  name: dev-idle-gc
+  namespace: finops-system
+spec:
+  scope:
+    namespaces:
+      include:
+        - dev-*
+        - feature-*
+      exclude:
+        - dev-critical
+  conditions:
+    idleWindow: 48h
+    minHourlyCost: 2.0
+    trafficThreshold:
+      requestsPerMinute: 0
+  actions:
+    type: scaleToZero
+    notify: slack
+    reactivationAllowed: true
+  enforcement:
+    dryRun: false
+    maxActionsPerRun: 5
+    cooldownWindow: 1h
+---
+# Sample Policy 2: Weekend Non-Prod Shutdown
+# Pauses staging environments on weekends
+apiVersion: finops.io/v1alpha1
+kind: EnforcementPolicy
+metadata:
+  name: weekend-staging-shutdown
+  namespace: finops-system
+spec:
+  scope:
+    namespaces:
+      include:
+        - staging-*
+        - qa-*
+  conditions:
+    idleWindow: 4h
+    minHourlyCost: 1.0
+  actions:
+    type: scaleToZero
+    notify: slack
+    reactivationAllowed: true
+  enforcement:
+    maxActionsPerRun: 10
+  schedule:
+    timezone: America/Los_Angeles
+    activeHours:
+      - days: [Sat, Sun]
+        hours: [0, 23]
+---
+# Sample Policy 3: High-Cost Idle Detection (Aggressive)
+# Targets expensive resources that are idle for 24 hours
+apiVersion: finops.io/v1alpha1
+kind: EnforcementPolicy
+metadata:
+  name: expensive-idle-gc
+  namespace: finops-system
+spec:
+  scope:
+    namespaces:
+      include:
+        - dev-*
+        - staging-*
+    labels:
+      match:
+        cost-tier: high
+  conditions:
+    idleWindow: 24h
+    minHourlyCost: 10.0
+  actions:
+    type: scaleToZero
+    notify: slack
+    reactivationAllowed: true
+  enforcement:
+    maxActionsPerRun: 3
+    cooldownWindow: 2h
+---
+# Sample Policy 4: Dry-Run Test Policy
+# Use this to test policy configuration without actual enforcement
+apiVersion: finops.io/v1alpha1
+kind: EnforcementPolicy
+metadata:
+  name: test-policy-dryrun
+  namespace: finops-system
+spec:
+  scope:
+    namespaces:
+      include:
+        - test-*
+  conditions:
+    idleWindow: 1h
+    minHourlyCost: 0.1
+  actions:
+    type: scaleToZero
+    notify: slack
+    reactivationAllowed: true
+  enforcement:
+    dryRun: true # Safe testing mode
+    maxActionsPerRun: 10

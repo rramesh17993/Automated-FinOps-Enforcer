@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finops-enforcer
+  namespace: finops-system
+  labels:
+    app: finops-enforcer
+    control-plane: controller-manager
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: finops-enforcer
+  template:
+    metadata:
+      labels:
+        app: finops-enforcer
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: finops-enforcer
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        fsGroup: 65532
+      containers:
+        - name: manager
+          image: finops-enforcer:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /manager
+          args:
+            - --leader-elect
+            - --opencost-endpoint=http://opencost.opencost:9003
+            - --opencost-timeout=30s
+            - --max-actions-per-run=10
+          env:
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: finops-enforcer-secrets
+                  key: slack-webhook-url
+                  optional: true
+          ports:
+            - name: metrics
+              containerPort: 8080
+              protocol: TCP
+            - name: health
+              containerPort: 8081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: finops-enforcer-metrics
+  namespace: finops-system
+  labels:
+    app: finops-enforcer
+spec:
+  selector:
+    app: finops-enforcer
+  ports:
+    - name: metrics
+      port: 8080
+      targetPort: metrics
+      protocol: TCP
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: finops-enforcer
+  namespace: finops-system
+  labels:
+    app: finops-enforcer
+spec:
+  selector:
+    matchLabels:
+      app: finops-enforcer
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
