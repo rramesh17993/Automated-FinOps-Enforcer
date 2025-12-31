@@ -1,0 +1,400 @@
+{
+  "dashboard": {
+    "title": "FinOps Enforcer - Business Metrics",
+    "tags": ["finops", "cost-optimization", "business"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "💰 Monthly Savings Trajectory",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "sum(finops_estimated_savings_usd)",
+            "legendFormat": "Estimated Monthly Savings",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 500, "color": "yellow"},
+                {"value": 2000, "color": "green"}
+              ]
+            },
+            "mappings": []
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        },
+        "description": "Projected monthly savings from currently paused resources. This is the money NOT being spent right now."
+      },
+      {
+        "id": 2,
+        "title": "📈 ROI Calculator",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "(sum(finops_estimated_savings_usd) * 12) / 2400",
+            "legendFormat": "Annual ROI Multiplier",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "none",
+            "decimals": 1,
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 5, "color": "yellow"},
+                {"value": 10, "color": "green"},
+                {"value": 20, "color": "dark-green"}
+              ]
+            },
+            "mappings": []
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "orientation": "auto",
+          "textMode": "value",
+          "colorMode": "background",
+          "textSize": {"title": 18, "value": 72}
+        },
+        "description": "ROI = (Annual Savings) / (Controller Overhead)\nAssuming $200/month overhead (controller resources + operator time).\nExample: $4,500/month savings = $54,000/year ÷ $2,400 = 22.5x ROI"
+      },
+      {
+        "id": 3,
+        "title": "🎯 Enforcement Accuracy",
+        "type": "gauge",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
+        "targets": [
+          {
+            "expr": "(1 - (sum(rate(finops_false_positives_total[24h])) / sum(rate(finops_actions_taken_total[24h])))) * 100",
+            "legendFormat": "Accuracy %",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "min": 0,
+            "max": 100,
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 80, "color": "yellow"},
+                {"value": 95, "color": "green"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "description": "Percentage of enforcement actions that were correct (not reversed within 24h). Target: >95%"
+      },
+      {
+        "id": 4,
+        "title": "⚡ Resources Currently Paused",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
+        "targets": [
+          {
+            "expr": "sum(finops_paused_resources_total)",
+            "legendFormat": "Paused Deployments",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "blue"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "description": "Total number of deployments currently scaled to zero by FinOps Enforcer"
+      },
+      {
+        "id": 5,
+        "title": "📊 Actions Per Day",
+        "type": "stat",
+        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
+        "targets": [
+          {
+            "expr": "sum(increase(finops_actions_taken_total[24h]))",
+            "legendFormat": "Daily Actions",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "palette-classic"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "blue"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "orientation": "auto",
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "description": "Number of enforcement actions taken in the last 24 hours"
+      },
+      {
+        "id": 6,
+        "title": "💵 Savings Over Time",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
+        "targets": [
+          {
+            "expr": "sum(finops_estimated_savings_usd)",
+            "legendFormat": "Monthly Savings",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(finops_estimated_savings_usd) * 12",
+            "legendFormat": "Annualized Savings",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "currencyUSD", "label": "Savings (USD)"},
+          {"format": "short"}
+        ],
+        "xaxis": {"show": true, "mode": "time"},
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "points": false,
+        "pointradius": 5,
+        "bars": false,
+        "stack": false,
+        "legend": {"show": true, "alignAsTable": true, "avg": true, "current": true, "max": true},
+        "description": "Historical trend of estimated cost savings from paused resources"
+      },
+      {
+        "id": 7,
+        "title": "🏆 Top Cost-Saving Policies",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+        "targets": [
+          {
+            "expr": "topk(5, sum by (policy) (finops_estimated_savings_usd))",
+            "legendFormat": "{{policy}}",
+            "refId": "A",
+            "format": "table",
+            "instant": true
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {"Time": true},
+              "indexByName": {},
+              "renameByName": {
+                "policy": "Policy Name",
+                "Value": "Monthly Savings"
+              }
+            }
+          }
+        ],
+        "fieldConfig": {
+          "overrides": [
+            {
+              "matcher": {"id": "byName", "options": "Monthly Savings"},
+              "properties": [{"id": "unit", "value": "currencyUSD"}]
+            }
+          ]
+        },
+        "description": "Which policies are generating the most savings?"
+      },
+      {
+        "id": 8,
+        "title": "🔍 Resource Matches vs Actions",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+        "targets": [
+          {
+            "expr": "sum(rate(finops_policy_matches_total[5m]))",
+            "legendFormat": "Resources Matched",
+            "refId": "A"
+          },
+          {
+            "expr": "sum(rate(finops_actions_taken_total[5m]))",
+            "legendFormat": "Actions Taken",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "short", "label": "Rate (per second)"},
+          {"format": "short"}
+        ],
+        "xaxis": {"show": true, "mode": "time"},
+        "lines": true,
+        "fill": 1,
+        "linewidth": 2,
+        "legend": {"show": true, "alignAsTable": true, "avg": true, "current": true},
+        "description": "Gap between matched resources and actual actions (shows impact of rate limiting and dry-run mode)"
+      },
+      {
+        "id": 9,
+        "title": "⚠️ Policy Violations & Overrides",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 8, "x": 0, "y": 32},
+        "targets": [
+          {
+            "expr": "sum(finops_excluded_resources_total)",
+            "legendFormat": "Manually Excluded",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "palette-classic"}
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "description": "Resources with finops.io/exclude=true annotation"
+      },
+      {
+        "id": 10,
+        "title": "🔄 Reactivation Rate",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 8, "x": 8, "y": 32},
+        "targets": [
+          {
+            "expr": "sum(increase(finops_reactivations_total[24h]))",
+            "legendFormat": "Last 24h Reactivations",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "short",
+            "color": {"mode": "palette-classic"}
+          }
+        },
+        "options": {
+          "graphMode": "area",
+          "textMode": "value_and_name",
+          "colorMode": "value"
+        },
+        "description": "How many resources were reactivated via Slack in the last 24h"
+      },
+      {
+        "id": 11,
+        "title": "⏱️ Average Reconciliation Time",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 8, "x": 16, "y": 32},
+        "targets": [
+          {
+            "expr": "avg(finops_reconciliation_duration_seconds)",
+            "legendFormat": "Avg Reconcile Time",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s",
+            "decimals": 2,
+            "color": {"mode": "thresholds"},
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "green"},
+                {"value": 10, "color": "yellow"},
+                {"value": 30, "color": "red"}
+              ]
+            }
+          }
+        },
+        "options": {
+          "graphMode": "none",
+          "textMode": "value_and_name",
+          "colorMode": "background"
+        },
+        "description": "Performance metric: how long does each reconciliation loop take?"
+      }
+    ],
+    "annotations": {
+      "list": [
+        {
+          "datasource": "Prometheus",
+          "enable": true,
+          "expr": "changes(finops_actions_taken_total[1m]) > 0",
+          "iconColor": "rgba(255, 96, 96, 1)",
+          "name": "Enforcement Actions",
+          "titleFormat": "Resource Paused"
+        }
+      ]
+    },
+    "templating": {
+      "list": [
+        {
+          "name": "namespace",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(finops_paused_resources_total, namespace)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": ".*"
+        },
+        {
+          "name": "policy",
+          "type": "query",
+          "datasource": "Prometheus",
+          "query": "label_values(finops_policy_matches_total, policy)",
+          "multi": true,
+          "includeAll": true,
+          "allValue": ".*"
+        }
+      ]
+    },
+    "time": {"from": "now-6h", "to": "now"},
+    "timepicker": {"refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "30m", "1h"]}
+  }
+}
