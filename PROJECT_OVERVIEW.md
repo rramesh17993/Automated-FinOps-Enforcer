@@ -111,61 +111,6 @@ metadata:
 
 If OpenCost is down, cost data is missing, or any uncertainty exists: **do nothing**.
 
-## Portfolio Value
-
-### What This Demonstrates
-
-#### For Infrastructure Engineering Roles
-
-- Kubernetes controller development (controller-runtime)
-- Custom Resource Definitions (CRDs)
-- Operator pattern implementation
-- RBAC security model
-- Production readiness (HA, metrics, logging)
-
-#### For Platform Engineering Roles
-
-- Developer experience (Slack integration, easy reactivation)
-- Policy-driven automation
-- Cost optimization at scale
-- Operational excellence (runbooks, troubleshooting)
-
-#### For Senior/Staff Roles
-
-- **Trade-off analysis**: Explicit documentation of what was NOT built
-- **Risk management**: Multiple safety guardrails
-- **Judgment**: Conservative scope (non-prod only)
-- **Communication**: Clear documentation for multiple audiences
-
-#### For Director/VP Roles
-
-- **Business impact**: Measurable cost savings
-- **Scalability**: Handles growth without linear cost increase
-- **Trust**: Transparent, reversible actions
-- **Strategy**: Complements humans, doesn't replace them
-
-## Interview Talking Points
-
-### "Walk me through this project"
-
-> "I built an active cost governance system for Kubernetes. Most FinOps tools are dashboards that tell you money was wasted last month. Mine automatically pauses idle resources in real-time, saves money immediately, and notifies teams via Slack with one-click reactivation. It's currently preventing around $5,000/month in wasted non-prod spend."
-
-### "What was the biggest technical challenge?"
-
-> "Balancing automation with safety. I needed it to act autonomously, but never surprise developers or cause prod incidents. The solution was multiple guardrails: namespace allowlists, cooldown windows, dry-run mode, and explicit exclusions. I also made everything reversible—scale-to-zero, never delete."
-
-### "What would you do differently?"
-
-> "I'd implement traffic-based idle detection earlier. Right now it relies on time-based heuristics. Integrating with Prometheus for actual request metrics would reduce false positives. I also considered ML forecasting but deliberately didn't build it—the simple approach works well enough to validate the concept first."
-
-### "How does this scale?"
-
-> "The controller uses standard Kubernetes patterns—leader election for HA, efficient list/watch, and reconciliation loops. It handles hundreds of deployments easily. For thousands, you'd batch policy evaluations and use multiple controllers with namespace sharding. But most orgs hit ROI well before those limits."
-
-### "What did you learn?"
-
-> "Two key things: First, developers will trust automation if it's transparent and reversible. The Slack notifications with one-click reactivation were critical for adoption. Second, being explicit about what you're NOT building is as important as what you are building. The 'Non-Goals' section in my design doc got more discussion than the features."
-
 ## Technical Specifications
 
 ### Stack
